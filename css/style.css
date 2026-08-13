@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --primary: #6D28D9;
+  --primary-hover: #5B21B6;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom Component Classes */
+.card {
+  background-color: theme('colors.white');
+  border: 1px solid theme('colors.slate.200');
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.dark .card {
+  background-color: theme('colors.slate.900');
+  border-color: theme('colors.slate.800');
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: theme('colors.white');
+  border: 1px solid theme('colors.slate.300');
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.dark .input-field {
+  background-color: theme('colors.slate.950');
+  border-color: theme('colors.slate.800');
+  color: theme('colors.slate.100');
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: theme('colors.slate.100');
+  color: theme('colors.slate.800');
+  border: 1px solid theme('colors.slate.200');
+}
+
+.dark .btn-secondary {
+  background-color: theme('colors.slate.800');
+  color: theme('colors.slate.200');
+  border-color: theme('colors.slate.700');
+}
+
+.btn-secondary:hover {
+  background-color: theme('colors.slate.200');
+}
+
+.dark .btn-secondary:hover {
+  background-color: theme('colors.slate.700');
+}
+
+.btn-danger {
+  background-color: theme('colors.red.600');
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: theme('colors.red.700');
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.slate.300');
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: theme('colors.slate.700');
+}
