@@ -1,11 +1,17 @@
-export function formatDate(timestamp) {
-    if (!timestamp) return 'Recently';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+export function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
-export function sanitizeInput(input) {
-    const div = document.createElement('div');
-    div.textContent = input;
-    return div.innerHTML;
+export function sanitizeHTML(str) {
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
 }
