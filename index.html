@@ -1,249 +1,272 @@
-```html
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SumNova V2 | Learn Faster. Understand Better.</title>
-    <meta name="description" content="AI-powered study assistant for students, researchers, educators, and professionals.">
-    <link rel="manifest" href="./manifest.json">
+    <title>SumNova V2 — Learn Faster. Understand Better.</title>
+    <meta name="description" content="AI-powered study assistant and summarizer built by Davonium Technologies.">
     <meta name="theme-color" content="#6D28D9">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/davonium-technologies-logo.png">
     <link rel="stylesheet" href="./css/style.css">
-    <!-- Favicon placeholder -->
-    <link rel="icon" type="image/png" href="./assets/davonium-technologies-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors duration-200">
+<body>
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-    <!-- Global Header / Navigation -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" data-route="landing" id="logo-nav">
-                <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-purple-500/30">
-                    S
-                </div>
-                <div>
-                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">SumNova</span>
-                    <span class="text-xs font-semibold px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 ml-1">V2</span>
-                </div>
-            </div>
+    <header class="app-header">
+        <div class="header-container">
+            <a href="#landing" class="brand-logo" data-link>
+                <img src="./assets/davonium-technologies-logo.png" alt="Davonium Logo" class="logo-img">
+                <span class="brand-name">SumNova</span>
+                <span class="badge">V2</span>
+            </a>
 
-            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
-                <button data-route="landing" class="nav-link transition hover:text-purple-600 dark:hover:text-purple-400">Home</button>
-                <button data-route="dashboard" class="nav-link transition hover:text-purple-600 dark:hover:text-purple-400 auth-required hidden">Dashboard</button>
-                <button data-route="workspace" class="nav-link transition hover:text-purple-600 dark:hover:text-purple-400 auth-required hidden">Workspace</button>
-                <button data-route="history" class="nav-link transition hover:text-purple-600 dark:hover:text-purple-400 auth-required hidden">History</button>
+            <nav class="desktop-nav" id="desktop-nav">
+                <a href="#landing" class="nav-link active" data-link data-route="landing">Home</a>
+                <a href="#dashboard" class="nav-link protected-route hidden" data-link data-route="dashboard">Dashboard</a>
+                <a href="#workspace" class="nav-link protected-route hidden" data-link data-route="workspace">Workspace</a>
+                <a href="#history" class="nav-link protected-route hidden" data-link data-route="history">History</a>
+                <a href="#settings" class="nav-link" data-link data-route="settings">Settings</a>
             </nav>
 
-            <div class="flex items-center space-x-3">
-                <button id="theme-toggle" aria-label="Toggle theme" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                    <!-- Sun/Moon Icon Placeholder -->
-                    <span id="theme-icon">🌓</span>
+            <div class="header-actions">
+                <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle theme">
+                    <span id="theme-icon">🌙</span>
                 </button>
 
-                <div id="auth-nav-container">
-                    <button data-route="auth" class="btn btn-secondary text-sm px-4 py-2" id="nav-signin-btn">Sign In</button>
-                    <div id="user-menu" class="hidden flex items-center space-x-3">
-                        <button data-route="profile" class="flex items-center space-x-2 text-sm font-medium hover:opacity-80 transition">
-                            <span id="user-display-name" class="hidden sm:inline">User</span>
-                            <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs" id="user-avatar-initial">U</div>
-                        </button>
-                        <button id="signout-btn" class="btn btn-danger text-xs px-3 py-1.5">Sign Out</button>
+                <div id="auth-action-container">
+                    <a href="#auth" class="btn btn-secondary btn-sm" id="header-signin-btn" data-link data-route="auth">Sign In</a>
+                </div>
+
+                <div id="user-menu-container" class="user-menu-container hidden">
+                    <button id="user-menu-toggle" class="user-menu-toggle" aria-expanded="false">
+                        <span id="user-avatar-initial" class="avatar-initial">U</span>
+                    </button>
+                    <div id="user-dropdown" class="user-dropdown hidden">
+                        <div class="dropdown-header">
+                            <p id="dropdown-user-name" class="dropdown-name">User</p>
+                            <p id="dropdown-user-email" class="dropdown-email">user@example.com</p>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#profile" class="dropdown-item" data-link data-route="profile">Profile</a>
+                        <a href="#settings" class="dropdown-item" data-link data-route="settings">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <button id="signout-btn" class="dropdown-item text-danger">Sign Out</button>
                     </div>
                 </div>
 
-                <!-- Mobile Menu Trigger -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg border border-slate-200 dark:border-slate-800">
-                    ☰
+                <button id="mobile-menu-toggle" class="mobile-menu-toggle md:hidden" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile Nav Drawer -->
-        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-2 pb-4 space-y-2">
-            <button data-route="landing" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">Home</button>
-            <button data-route="dashboard" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 auth-required hidden">Dashboard</button>
-            <button data-route="workspace" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 auth-required hidden">Workspace</button>
-            <button data-route="history" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 auth-required hidden">History</button>
-            <button data-route="settings" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">Settings</button>
+        <div id="mobile-nav" class="mobile-nav hidden">
+            <a href="#landing" class="mobile-nav-link" data-link data-route="landing">Home</a>
+            <a href="#dashboard" class="mobile-nav-link protected-route hidden" data-link data-route="dashboard">Dashboard</a>
+            <a href="#workspace" class="mobile-nav-link protected-route hidden" data-link data-route="workspace">Workspace</a>
+            <a href="#history" class="mobile-nav-link protected-route hidden" data-link data-route="history">History</a>
+            <a href="#profile" class="mobile-nav-link protected-route hidden" data-link data-route="profile">Profile</a>
+            <a href="#settings" class="mobile-nav-link" data-link data-route="settings">Settings</a>
+            <div class="mobile-auth-section" id="mobile-auth-section">
+                <a href="#auth" class="btn btn-primary w-full text-center" data-link data-route="auth">Sign In / Register</a>
+            </div>
         </div>
     </header>
 
-    <!-- Main App Container / Views -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-
+    <main class="app-main">
         <!-- VIEW: LANDING -->
-        <section id="view-landing" class="view-section py-12 md:py-20">
-            <div class="text-center max-w-3xl mx-auto space-y-6">
-                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-semibold tracking-wide uppercase">
-                    <span>Davonium Technologies</span>
-                    <span>•</span>
-                    <span>SumNova V2</span>
+        <section id="view-landing" class="view-section active">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-badge">Davonium Technologies • SumNova V2</div>
+                    <h1 class="hero-title">Learn Faster.<br><span class="gradient-text">Understand Better.</span></h1>
+                    <p class="hero-subtitle">Transform lengthy texts, research papers, and study guides into concise summaries, key points, and structured notes instantly with secure AI.</p>
+                    <div class="hero-cta-group">
+                        <a href="#workspace" class="btn btn-primary btn-lg" data-link data-route="workspace">Get Started Free</a>
+                        <a href="#auth" class="btn btn-outline btn-lg" data-link data-route="auth">Sign In / Register</a>
+                    </div>
                 </div>
-                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
-                    Learn Faster. <br>
-                    <span class="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Understand Better.</span>
-                </h1>
-                <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400">
-                    The next-generation AI-powered study assistant built for students, researchers, educators, and high-performing professionals.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <button data-route="workspace" class="btn btn-primary w-full sm:w-auto px-8 py-3.5 text-base font-semibold shadow-lg shadow-purple-600/30">
-                        Get Started Free
-                    </button>
-                    <button data-route="auth" class="btn btn-secondary w-full sm:w-auto px-8 py-3.5 text-base font-semibold">
-                        Sign In / Register
-                    </button>
+                <div class="hero-visual">
+                    <div class="preview-card">
+                        <div class="preview-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                            <span class="preview-title">SumNova AI Workspace</span>
+                        </div>
+                        <div class="preview-body">
+                            <div class="mock-line long"></div>
+                            <div class="mock-line medium"></div>
+                            <div class="mock-line short"></div>
+                            <div class="mock-ai-box">
+                                <span class="ai-sparkle">✨</span>
+                                <p>Generating key insights & structured study notes...</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Features Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
-                <div class="card p-6 space-y-3">
-                    <div class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 flex items-center justify-center text-xl font-bold">⚡</div>
-                    <h3 class="text-lg font-bold">Instant Summaries</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Convert long academic papers, textbook chapters, or technical docs into concise insights instantly.</p>
-                </div>
-                <div class="card p-6 space-y-3">
-                    <div class="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-xl font-bold">🎯</div>
-                    <h3 class="text-lg font-bold">Smart Study Notes</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Extract core key points, structured summaries, and custom study notes tailored to your curriculum.</p>
-                </div>
-                <div class="card p-6 space-y-3">
-                    <div class="w-12 h-12 rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-300 flex items-center justify-center text-xl font-bold">🔒</div>
-                    <h3 class="text-lg font-bold">Secure Cloud Storage</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Your summaries and history are securely synchronized and protected by advanced Firebase security rules.</p>
+            <div class="features-section">
+                <h2 class="section-title text-center">Engineered for Academic & Professional Excellence</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Instant AI Summaries</h3>
+                        <p>Process thousands of words into precise, digestible summaries tailored to your exact format preference.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>Secure Cloud Storage</h3>
+                        <p>Save your summaries directly to private Cloud Firestore storage protected by robust user ownership rules.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3>Progressive Web App</h3>
+                        <p>Install SumNova on any device for fast, reliable access anywhere, anytime, with seamless offline caching.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- VIEW: AUTH -->
-        <section id="view-auth" class="view-section hidden py-12 max-w-md mx-auto">
-            <div class="card p-8 space-y-6">
-                <div class="text-center space-y-2">
-                    <h2 class="text-2xl font-bold" id="auth-title">Welcome to SumNova</h2>
-                    <p class="text-sm text-slate-600 dark:text-slate-400" id="auth-subtitle">Sign in to sync your study notes across all devices.</p>
-                </div>
+        <section id="view-auth" class="view-section">
+            <div class="auth-container">
+                <div class="auth-card card">
+                    <div class="auth-header">
+                        <h2 id="auth-title">Welcome Back</h2>
+                        <p id="auth-subtitle">Sign in to access your cloud summaries and workspace.</p>
+                    </div>
 
-                <form id="auth-form" class="space-y-4">
-                    <div id="name-field-container" class="hidden">
-                        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Display Name</label>
-                        <input type="text" id="auth-name" class="input-field" placeholder="Jane Doe">
+                    <div class="auth-tabs">
+                        <button type="button" id="tab-signin" class="auth-tab active">Sign In</button>
+                        <button type="button" id="tab-signup" class="auth-tab">Create Account</button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Email Address</label>
-                        <input type="email" id="auth-email" required class="input-field" placeholder="you@domain.com">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Password</label>
-                        <input type="password" id="auth-password" required class="input-field" placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full py-3 font-semibold" id="auth-submit-btn">Sign In</button>
-                </form>
 
-                <div class="text-center text-sm">
-                    <button type="button" id="auth-toggle-mode" class="text-purple-600 dark:text-purple-400 font-medium hover:underline">
-                        Don't have an account? Sign up
-                    </button>
+                    <form id="auth-form" class="auth-form">
+                        <div id="signup-name-group" class="form-group hidden">
+                            <label for="auth-name">Display Name</label>
+                            <input type="text" id="auth-name" class="form-input" placeholder="Alex Johnson">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="auth-email">Email Address</label>
+                            <input type="email" id="auth-email" class="form-input" required placeholder="name@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="auth-password">Password</label>
+                            <input type="password" id="auth-password" class="form-input" required placeholder="••••••••" minlength="6">
+                        </div>
+
+                        <button type="submit" id="auth-submit-btn" class="btn btn-primary w-full">Sign In</button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch-link">Create account</a></p>
+                    </div>
                 </div>
-                <div id="auth-error-box" class="hidden p-3 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs"></div>
             </div>
         </section>
 
         <!-- VIEW: DASHBOARD -->
-        <section id="view-dashboard" class="view-section hidden py-8 space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-3xl font-black tracking-tight" id="dashboard-welcome">Welcome back!</h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm">Here is your study activity overview and recent workspace activity.</p>
+        <section id="view-dashboard" class="view-section">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 id="dashboard-welcome" class="dashboard-title">Dashboard</h1>
+                        <p class="dashboard-subtitle">Overview of your study activity and saved cloud summaries.</p>
+                    </div>
+                    <a href="#workspace" class="btn btn-primary" data-link data-route="workspace">+ New Summary</a>
                 </div>
-                <button data-route="workspace" class="btn btn-primary px-6 py-3 font-semibold shadow-lg shadow-purple-600/20">
-                    + New Summary
-                </button>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="card p-6 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">Total Summaries</p>
-                        <h3 class="text-3xl font-black mt-1" id="stat-total-summaries">0</h3>
+                <div class="stats-grid">
+                    <div class="stat-card card">
+                        <span class="stat-icon">📚</span>
+                        <div>
+                            <p class="stat-label">Total Summaries</p>
+                            <h3 id="stat-total-summaries" class="stat-value">0</h3>
+                        </div>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 flex items-center justify-center font-bold text-xl">📚</div>
-                </div>
-                <div class="card p-6 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">Account Status</p>
-                        <h3 class="text-lg font-bold mt-1 text-emerald-600 dark:text-emerald-400">Active / Synced</h3>
+                    <div class="stat-card card">
+                        <span class="stat-icon">🔒</span>
+                        <div>
+                            <p class="stat-label">Cloud Status</p>
+                            <h3 class="stat-value text-success">Secure & Active</h3>
+                        </div>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold text-xl">🛡️</div>
-                </div>
-                <div class="card p-6 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">AI Engine</p>
-                        <h3 class="text-lg font-bold mt-1 text-purple-600 dark:text-purple-400">SumNova V2 Engine</h3>
+                    <div class="stat-card card">
+                        <span class="stat-icon">⚡</span>
+                        <div>
+                            <p class="stat-label">AI Engine</p>
+                            <h3 class="stat-value text-purple">Ready</h3>
+                        </div>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center font-bold text-xl">⚡</div>
                 </div>
-            </div>
 
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xl font-bold">Recent Summaries</h3>
-                    <button data-route="history" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">View All</button>
-                </div>
-                <div id="dashboard-recent-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Populated dynamically -->
-                    <div class="card p-6 text-center text-slate-600 dark:text-slate-400 text-sm">No summaries yet. Head over to the workspace to create your first summary!</div>
+                <div class="section-block">
+                    <div class="section-heading">
+                        <h3>Recent Summaries</h3>
+                        <a href="#history" class="link-btn" data-link data-route="history">View All →</a>
+                    </div>
+                    <div id="dashboard-recent-list" class="recent-grid">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- VIEW: WORKSPACE -->
-        <section id="view-workspace" class="view-section hidden py-8 space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold tracking-tight">Summary Workspace</h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm">Paste your text, choose your format, and generate intelligent summaries.</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Input Column -->
-                <div class="card p-6 space-y-4 flex flex-col">
-                    <div class="flex items-center justify-between">
-                        <label for="source-text" class="text-sm font-semibold uppercase text-slate-600 dark:text-slate-400">Source Text / Article</label>
-                        <button id="clear-text-btn" class="text-xs text-slate-600 dark:text-slate-400 hover:text-red-500">Clear</button>
-                    </div>
-                    <textarea id="source-text" rows="12" class="input-field flex-grow resize-none font-mono text-xs sm:text-sm" placeholder="Paste your text, lecture notes, or research excerpt here..."></textarea>
-                    
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">Summary Type</label>
-                        <select id="summary-type" class="input-field">
-                            <option value="quick">Quick Summary</option>
-                            <option value="detailed">Detailed Summary</option>
-                            <option value="keypoints">Key Points</option>
-                            <option value="studynotes">Study Notes</option>
-                        </select>
-                    </div>
-
-                    <button id="generate-btn" class="btn btn-primary w-full py-3.5 font-semibold shadow-lg shadow-purple-600/30 flex items-center justify-center space-x-2">
-                        <span>Generate Summary</span>
-                    </button>
+        <section id="view-workspace" class="view-section">
+            <div class="workspace-container">
+                <div class="workspace-header">
+                    <h1 class="workspace-title">AI Workspace</h1>
+                    <p class="workspace-subtitle">Paste your text below and generate intelligent study summaries.</p>
                 </div>
 
-                <!-- Output Column -->
-                <div class="card p-6 space-y-4 flex flex-col bg-slate-900/5 dark:bg-slate-900/40">
-                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                        <h3 class="font-bold text-sm uppercase tracking-wide text-slate-600 dark:text-slate-400">AI Generated Result</h3>
-                        <div class="flex items-center space-x-2">
-                            <button id="copy-result-btn" class="btn btn-secondary text-xs px-3 py-1.5 hidden">Copy</button>
-                            <button id="save-summary-btn" class="btn btn-primary text-xs px-3 py-1.5 hidden">Save to Cloud</button>
+                <div class="workspace-grid">
+                    <div class="workspace-pane card">
+                        <div class="pane-header">
+                            <label for="source-text" class="pane-label">Source Text</label>
+                            <button id="clear-text-btn" class="text-btn text-xs">Clear</button>
+                        </div>
+                        <textarea id="source-text" class="form-textarea" placeholder="Paste article, notes, or research text here (minimum 10 characters)..."></textarea>
+                        
+                        <div class="workspace-controls">
+                            <div class="form-group flex-1">
+                                <label for="summary-type" class="form-label text-xs">Summary Format</label>
+                                <select id="summary-type" class="form-select">
+                                    <option value="quick">Quick Summary</option>
+                                    <option value="detailed">Detailed Comprehensive Summary</option>
+                                    <option value="keypoints">Key Points Extracted</option>
+                                    <option value="studynotes">Structured Study Notes</option>
+                                </select>
+                            </div>
+                            <button id="generate-btn" class="btn btn-primary self-end">
+                                <span>Generate Summary</span>
+                            </button>
                         </div>
                     </div>
-                    
-                    <div id="output-container" class="flex-grow min-h-[300px] overflow-y-auto p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm whitespace-pre-wrap leading-relaxed">
-                        <div class="h-full flex flex-col items-center justify-center text-center text-slate-600 dark:text-slate-400 space-y-2">
-                            <span class="text-2xl">✨</span>
-                            <p>Your generated summary will appear here.</p>
+
+                    <div class="workspace-pane card output-pane">
+                        <div class="pane-header">
+                            <span class="pane-label">Generated AI Result</span>
+                            <div class="output-actions">
+                                <button id="copy-result-btn" class="btn btn-outline btn-sm hidden">Copy</button>
+                                <button id="save-summary-btn" class="btn btn-primary btn-sm hidden">Save to Cloud</button>
+                            </div>
+                        </div>
+                        <div id="output-container" class="output-content">
+                            <div class="empty-output">
+                                <span class="empty-icon">✨</span>
+                                <p>Your generated summary will appear here.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -251,80 +274,86 @@
         </section>
 
         <!-- VIEW: HISTORY -->
-        <section id="view-history" class="view-section hidden py-8 space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold tracking-tight">Saved Summaries</h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm">Access, review, or delete your previously saved summaries.</p>
+        <section id="view-history" class="view-section">
+            <div class="history-container">
+                <div class="history-header">
+                    <div>
+                        <h1 class="history-title">Saved History</h1>
+                        <p class="history-subtitle">Access, review, or delete your previously saved cloud summaries.</p>
+                    </div>
+                    <button id="refresh-history-btn" class="btn btn-outline btn-sm">Refresh</button>
                 </div>
-                <button id="refresh-history-btn" class="btn btn-secondary text-xs px-3 py-2">Refresh</button>
-            </div>
 
-            <div id="history-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Populated dynamically -->
-                <div class="card p-8 text-center text-slate-600 dark:text-slate-400 col-span-full">Loading history...</div>
+                <div id="history-list-container" class="history-grid">
+                    <!-- Populated dynamically -->
+                </div>
             </div>
         </section>
 
         <!-- VIEW: PROFILE -->
-        <section id="view-profile" class="view-section hidden py-8 max-w-xl mx-auto space-y-6">
-            <div class="card p-8 space-y-6">
-                <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-purple-600/30" id="profile-avatar-initial">U</div>
-                    <div>
-                        <h2 class="text-2xl font-bold" id="profile-name">User Name</h2>
-                        <p class="text-sm text-slate-600 dark:text-slate-400" id="profile-email">email@domain.com</p>
+        <section id="view-profile" class="view-section">
+            <div class="profile-container">
+                <div class="profile-card card">
+                    <div class="profile-header-box">
+                        <div id="profile-avatar-large" class="profile-avatar">U</div>
+                        <div>
+                            <h2 id="profile-name">User Name</h2>
+                            <p id="profile-email" class="text-muted">user@example.com</p>
+                        </div>
                     </div>
-                </div>
-                <div class="border-t border-slate-200 dark:border-slate-800 pt-4 space-y-3">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-600 dark:text-slate-400">User ID</span>
-                        <span class="font-mono text-xs" id="profile-uid">---</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-600 dark:text-slate-400">Account Created</span>
-                        <span id="profile-created">---</span>
+                    <div class="profile-details">
+                        <div class="detail-row">
+                            <span class="detail-label">User ID</span>
+                            <span id="profile-uid" class="detail-value font-mono">--</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Provider</span>
+                            <span class="detail-value">Firebase Email/Password</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Cloud Firestore</span>
+                            <span class="detail-value text-success">Connected</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- VIEW: SETTINGS -->
-        <section id="view-settings" class="view-section hidden py-8 max-w-xl mx-auto space-y-6">
-            <div class="card p-8 space-y-6">
-                <h2 class="text-2xl font-bold tracking-tight">Application Settings</h2>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-800">
-                        <div>
-                            <h4 class="font-bold text-sm">Dark Theme</h4>
-                            <p class="text-xs text-slate-600 dark:text-slate-400">Toggle dark appearance across the application.</p>
+        <section id="view-settings" class="view-section">
+            <div class="settings-container">
+                <div class="settings-card card">
+                    <h2>Application Settings</h2>
+                    <p class="text-muted text-sm">Manage your preferences and interface options.</p>
+                    
+                    <div class="settings-list">
+                        <div class="setting-item">
+                            <div>
+                                <h4>Interface Theme</h4>
+                                <p class="text-xs text-muted">Switch between light and dark display modes.</p>
+                            </div>
+                            <button id="settings-theme-btn" class="btn btn-outline btn-sm">Toggle Dark Mode</button>
                         </div>
-                        <button id="settings-theme-toggle" class="btn btn-secondary text-xs px-4 py-2">Toggle Theme</button>
-                    </div>
-                    <div class="flex items-center justify-between py-2">
-                        <div>
-                            <h4 class="font-bold text-sm">PWA Service Worker</h4>
-                            <p class="text-xs text-slate-600 dark:text-slate-400">Offline caching status and updates.</p>
+                        <div class="setting-item">
+                            <div>
+                                <h4>Progressive Web App</h4>
+                                <p class="text-xs text-muted">SumNova V2 is installable and caches static assets offline.</p>
+                            </div>
+                            <span class="badge badge-success">Active PWA</span>
                         </div>
-                        <span class="text-xs font-semibold px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300">Active</span>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Global Toast / Modal Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
-
-    <!-- Global Footer -->
-    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-600 dark:text-slate-400">
-        <p>© 2026 Davonium Technologies. All rights reserved. SumNova V2.</p>
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Davonium Technologies. All rights reserved.</p>
+            <p class="footer-tagline">SumNova V2 • Learn Faster. Understand Better.</p>
+        </div>
     </footer>
 
-    <!-- ES Module App Entry Point -->
     <script type="module" src="./js/app.js"></script>
 </body>
 </html>
-
-```
