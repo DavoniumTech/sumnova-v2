@@ -5,6 +5,8 @@ let currentGeneratedResult = null;
 let currentSourceText = '';
 let currentSummaryType = 'quick';
 
+const BACKEND_SUMMARIZE_ENDPOINT = '/api/summarize';
+
 export function initWorkspace() {
     const generateBtn = document.getElementById('generate-btn');
     const clearBtn = document.getElementById('clear-text-btn');
@@ -20,6 +22,11 @@ export function initWorkspace() {
 
             if (!text) {
                 showToast('Please enter or paste text to summarize.', 'error');
+                return;
+            }
+
+            if (text.length < 10) {
+                showToast('Text is too short for intelligent summarization.', 'error');
                 return;
             }
 
@@ -56,13 +63,17 @@ export function initWorkspace() {
     if (copyBtn) {
         copyBtn.addEventListener('click', () => {
             if (!currentGeneratedResult) return;
-            const textarea = document.createElement('textarea');
-            textarea.value = currentGeneratedResult;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            showToast('Summary copied to clipboard!', 'success');
+            navigator.clipboard.writeText(currentGeneratedResult).then(() => {
+                showToast('Summary copied to clipboard!', 'success');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = currentGeneratedResult;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Summary copied to clipboard!', 'success');
+            });
         });
     }
 
@@ -91,28 +102,36 @@ export function initWorkspace() {
 }
 
 export async function generateSummary(text, summaryType) {
-    // BACKEND REQUIRED: Frontend calls secure backend endpoint.
-    // Simulating intelligent summary processing for demonstration & resilient architecture testing:
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+        const response = await fetch(BACKEND_SUMMARIZE_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text, summaryType })
+        });
 
-    if (!text || text.length < 10) {
-        throw new Error('Text is too short for intelligent summarization.');
-    }
+        if (!response.ok) {
+            if (response.status === 429) {
+                throw new Error('Rate limit exceeded. Please try again later.');
+            } else if (response.status === 401 || response.status === 403) {
+                throw new Error('Authentication error with AI backend.');
+            } else {
+                throw new Error(`Backend error (${response.status}): AI service unavailable.`);
+            }
+        }
 
-    const sentences = text.split(/[.!?]+/).filter(Boolean);
-    const wordCount = text.split(/\s+/).length;
+        const data = await response.json();
+        if (!data || !data.summary) {
+            throw new Error('Invalid response received from AI backend.');
+        }
 
-    switch (summaryType) {
-        case 'quick':
-            return `[Quick Summary - SumNova V2 Engine]\n\n• Core Subject: ${sentences[0] || text.substring(0, 60)}...\n• Total Words Analyzed: ${wordCount} words.\n• Executive Takeaway: The provided text outlines critical concepts focusing on key foundational principles and structured insights.`;
-        case 'detailed':
-            return `[Detailed Comprehensive Summary - SumNova V2]\n\n1. Introduction & Context:\n${sentences.slice(0, 2).join('. ') || text.substring(0, 100)}.\n\n2. Core Analysis:\n- Explores primary thematic elements with robust depth.\n- Highlights significant structural components and data points.\n\n3. Conclusion:\nSynthesizes overall takeaways for optimal study and professional application.`;
-        case 'keypoints':
-            return `[Key Points Extracted - SumNova V2]\n\n1. ${sentences[0] || 'Primary premise established.'}\n2. ${sentences[1] || 'Secondary supporting argument verified.'}\n3. ${sentences[2] || 'Concluding synthesis & implications noted.'}`;
-        case 'studynotes':
-            return `[Structured Study Notes - SumNova V2]\n\nSUBJECT / THEME:\n${text.substring(0, 40)}...\n\nKEY DEFINITIONS:\n• Derived from primary text context.\n\nREVIEW QUESTIONS:\n1. What is the primary objective of this text?\n2. How do the secondary arguments support the conclusion?`;
-        default:
-            return `Summary: ${text.substring(0, 150)}...`;
+        return data.summary;
+    } catch (err) {
+        if (err.name === 'TypeError' || err.message.includes('Failed to fetch')) {
+            throw new Error('AI service is currently unavailable. Please try again later.');
+        }
+        throw err;
     }
 }
 
@@ -121,7 +140,7 @@ function setLoadingState(isLoading) {
     if (!btn) return;
     if (isLoading) {
         btn.disabled = true;
-        btn.innerHTML = `<span class="inline-block animate-spin mr-2">⚡</span> Generating...`;
+        btn.innerHTML = `<span>Generating...</span>`;
     } else {
         btn.disabled = false;
         btn.innerHTML = `<span>Generate Summary</span>`;
@@ -133,8 +152,8 @@ function renderResult(text) {
     if (!container) return;
     if (!text) {
         container.innerHTML = `
-            <div class="h-full flex flex-col items-center justify-center text-center text-slate-400 space-y-2">
-                <span class="text-2xl">✨</span>
+            <div class="empty-output">
+                <span class="empty-icon">✨</span>
                 <p>Your generated summary will appear here.</p>
             </div>`;
         return;
