@@ -1,78 +1,56 @@
 import { getCurrentUser } from './auth.js';
-import { showToast } from './ui.js';
-
-const routes = {
-    'landing': 'view-landing',
-    'auth': 'view-auth',
-    'dashboard': 'view-dashboard',
-    'workspace': 'view-workspace',
-    'history': 'view-history',
-    'profile': 'view-profile',
-    'settings': 'view-settings'
-};
 
 export function initRouter() {
-    // Listen for navigation clicks
+    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('load', handleRoute);
+
     document.addEventListener('click', (e) => {
-        const target = e.target.closest('[data-route]');
-        if (target) {
+        const link = e.target.closest('[data-link]');
+        if (link) {
             e.preventDefault();
-            const route = target.getAttribute('data-route');
+            const route = link.getAttribute('data-route') || 'landing';
             navigateTo(route);
         }
     });
-
-    // Handle browser back/forward history
-    window.addEventListener('popstate', (e) => {
-        const route = e.state?.route || 'landing';
-        renderRoute(route, false);
-    });
-
-    // Initial load route
-    const initialRoute = window.location.hash.replace('#', '') || 'landing';
-    navigateTo(initialRoute, false);
 }
 
-export function navigateTo(route, pushState = true) {
-    if (!routes[route]) {
-        route = 'landing';
-    }
+export function navigateTo(route) {
+    window.location.hash = '#' + route;
+}
 
-    // Check auth protection
+export function handleRoute() {
+    const hash = window.location.hash.replace('#', '') || 'landing';
     const protectedRoutes = ['dashboard', 'workspace', 'history', 'profile'];
-    if (protectedRoutes.includes(route) && !getCurrentUser()) {
-        showToast('Please sign in to access this area.', 'error');
+
+    const user = getCurrentUser();
+    if (protectedRoutes.includes(hash) && !user) {
         navigateTo('auth');
         return;
     }
 
-    renderRoute(route, pushState);
-}
+    const sections = document.querySelectorAll('.view-section');
+    sections.forEach(sec => sec.classList.remove('active'));
 
-function renderRoute(route, pushState) {
-    // Hide all view sections
-    Object.values(routes).forEach(viewId => {
-        const el = document.getElementById(viewId);
-        if (el) el.classList.add('hidden');
-    });
-
-    // Show target view section
-    const targetEl = document.getElementById(routes[route]);
-    if (targetEl) {
-        targetEl.classList.remove('hidden');
+    const targetSection = document.getElementById('view-' + hash);
+    if (targetSection) {
+        targetSection.classList.add('active');
         window.scrollTo(0, 0);
+    } else {
+        const landing = document.getElementById('view-landing');
+        if (landing) landing.classList.add('active');
     }
 
-    if (pushState) {
-        history.pushState({ route }, '', `#${route}`);
-    }
-
-    // Update active nav styles if needed
-    document.querySelectorAll('.nav-link').forEach(link => {
-        if (link.getAttribute('data-route') === route) {
-            link.classList.add('text-purple-600', 'dark:text-purple-400');
+    const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+    navLinks.forEach(link => {
+        if (link.getAttribute('data-route') === hash) {
+            link.classList.add('active');
         } else {
-            link.classList.remove('text-purple-600', 'dark:text-purple-400');
+            link.classList.remove('active');
         }
     });
+
+    const mobileNav = document.getElementById('mobile-nav');
+    if (mobileNav) {
+        mobileNav.classList.add('hidden');
+    }
 }
