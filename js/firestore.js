@@ -1,4 +1,3 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { 
     getFirestore, 
     collection, 
@@ -10,13 +9,14 @@ import {
     where, 
     serverTimestamp 
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-import { firebaseConfig } from '../firebaseconfig.js';
+import { app } from './auth.js';
 import { getCurrentUser } from './auth.js';
 
 let db;
 try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
+    if (app) {
+        db = getFirestore(app);
+    }
 } catch (err) {
     console.warn('Firestore initialization pending real credentials.');
 }
@@ -26,7 +26,7 @@ export async function saveSummaryRecord(summaryData) {
     if (!user) throw new Error('Authentication required to save summaries.');
     if (!db) throw new Error('CONFIGURATION REQUIRED: Firebase database missing.');
 
-    const summaryId = 'sum_' + Date.now() + '_' + Math.random().toString(36.25).substr(2, 9);
+    const summaryId = 'sum_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     const docRef = doc(db, 'summaries', summaryId);
     
     const payload = {
@@ -46,7 +46,6 @@ export async function saveSummaryRecord(summaryData) {
 
 export async function getUserSummaries(uid) {
     if (!db) {
-        // Return local mock storage if offline/unconfigured
         return [];
     }
     try {
